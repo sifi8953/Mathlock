@@ -4,7 +4,7 @@ Simon Fikse och Remu Mäenranta
 
 ## Vår idé
 
-Mathlock: ett program som tvingar användaren att lösa matteuppgifter för att kunna fortsätta använda sin dator. Periodiskt visas det en popup med en ekvation som inte försvinner förrän användaren löst den.
+Mathlock: ett program som tvingar användaren att lösa matteuppgifter för att kunna fortsätta använda sin dator. Periodiskt visas det en popup med en ekvation som inte försvinner förrän användaren löst den. Användaren har hur många försök som helst på sig att klara dem.
 
 ## Systemets delar
 
