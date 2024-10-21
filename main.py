@@ -10,7 +10,27 @@ questions: list[Question] = [
     ("Solve for x:\n\tx * 2 = 3\nx = ", [1.5]),
 ]
 
+EQ_TYPES: list[str] = [
+    "complex arithmetic", # started
+    "general eq",
+    "system of eq",
+    "second deg polynomials",
+    "polynomial div",
+    "inverse trig",
+]
+
 SLEEP_TIME: float = 60  # time in seconds between questions
+
+
+# Om z = 2 + 3i och w = 5 - 2i, vad är (2 + 3i)*(5 - 2i)?
+
+
+def get_question(types: list[str]) -> Question:
+    type = random.choice(types)
+
+    match type:
+        case "general equations":
+            pass  # get_general_eq()
 
 
 def give_question(q: Question) -> None:
