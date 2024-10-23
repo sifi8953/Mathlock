@@ -21,7 +21,7 @@ questions: list[Question] = [
 
 EQ_TYPES: list[str] = [
     "complex arithmetic",  # working
-    "general eq",
+    "general eq",  # started
     "system of eq",
     "second deg polynomials",
     "polynomial div",
