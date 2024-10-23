@@ -1,43 +1,32 @@
 from c_arithmetic import get_complex
+from general_eq import get_eq
+
 import time
 import random
 from collections.abc import Callable
+from typing import Any
 
 # (question, [answers])
 type Question = tuple[str, Callable[[str], bool]]
 
+EQ_TYPES: dict[str, Callable[[str], Question]] = {
+    "complex arithmetic": get_complex,  # working
+    "general eq": get_eq,  # started
+    "system of eq": NotImplemented,
+    "second deg polynomials": NotImplemented,
+    "polynomial div": NotImplemented,
+    "inverse trig": NotImplemented,
+}
 
-def parse_float(x: str) -> float:
-    try:
-        return float(x)
-    except ValueError:
-        raise ValueError("please input a number")
-
-
-questions: list[Question] = [
-    ("Solve for x:\n\tx = 1 + 1\nx = ", lambda x: parse_float(x) == 2),
-    ("Solve for x:\n\tx * 2 = 3\nx = ", lambda x: parse_float(x) == 1.5),
-]
-
-EQ_TYPES: list[str] = [
-    "complex arithmetic",  # working
-    "general eq",  # started
-    "system of eq",
-    "second deg polynomials",
-    "polynomial div",
-    "inverse trig",
-]
+OPTIONS: dict[Any] = {
+    "difficulty": 4,
+}
 
 SLEEP_TIME: float = 60  # time in seconds between questions
 
 
-def get_question(types: list[str]) -> Question:
-    type = random.choice(types)
-
-    match type:
-        # case "complex arithmetic":
-        case _:
-            return get_complex(0)
+def get_question(types: tuple[str], options: dict[Any]) -> Question:
+    return EQ_TYPES[random.choice(types)](**options)
 
 
 def give_question(q: Question) -> None:
@@ -61,8 +50,10 @@ def run_periodically(f: Callable[[], None], T: float):
 
 
 def main() -> None:
+    types = ("complex arithmetic", "general eq")
+
     # run_periodically(lambda: give_question(random.choice(questions)), SLEEP_TIME)
-    run_periodically(lambda: give_question(get_question(EQ_TYPES)), SLEEP_TIME)
+    run_periodically(lambda: give_question(get_question(types, OPTIONS)), SLEEP_TIME)
 
 
 if __name__ == "__main__":

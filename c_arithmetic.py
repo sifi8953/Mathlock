@@ -77,12 +77,13 @@ class OpTreeC:
             try:
                 z = self()
             except ZeroDivisionError:
-                pass
+                continue
             else:
-                if (z.real.is_integer() and z.imag.is_integer()
-                        and OpTreeC.val_range[0] <= z.real <= OpTreeC.val_range[1]
-                        and OpTreeC.val_range[0] <= z.imag <= OpTreeC.val_range[1]
-                    ):
+                if (
+                    z.real.is_integer() and z.imag.is_integer()
+                    and OpTreeC.val_range[0] <= z.real <= OpTreeC.val_range[1]
+                    and OpTreeC.val_range[0] <= z.imag <= OpTreeC.val_range[1]
+                ):
                     self.val = z
                     break
 
@@ -135,6 +136,6 @@ class OpTreeC:
                 return f"Im({self.left})"
 
 
-def get_complex(depth: int):
-    c = OpTreeC(depth)
+def get_complex(difficulty: int, **_):
+    c = OpTreeC(difficulty)
     return f"Evaluate\n\t{c}\n= ", lambda x: parse_complex(x) == c.val
