@@ -11,7 +11,7 @@ type Question = tuple[str, Callable[[str], bool]]
 
 EQ_TYPES: dict[str, Callable[[str], Question]] = {
     "complex arithmetic": get_complex,  # working
-    "general eq": get_eq,  # started
+    "general eq": get_eq,  # working
     "system of eq": NotImplemented,
     "second deg polynomials": NotImplemented,
     "polynomial div": NotImplemented,

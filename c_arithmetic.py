@@ -87,12 +87,6 @@ class OpTreeC:
                     self.val = z
                     break
 
-    def group_terms(self, op: str) -> list[Self]:
-        if self.op == op:
-            return self.left.group_terms(op) + self.right.group_terms(op)
-        else:
-            return [self]
-
     def __call__(self) -> complex:
         match self.op:
             case "const":
@@ -119,11 +113,11 @@ class OpTreeC:
             case "const":
                 return complex_str(self.val)
             case "add":
-                return "(" + ") + (".join(map(str, self.group_terms("add"))) + ")"
+                return f"{self.left} + {self.right}"
             case "mul":
-                return "(" + ") * (".join(map(str, self.group_terms("mul"))) + ")"
+                return f"{self.left:f} * {self.right:f}"
             case "neg":
-                return f"-({self.left})"
+                return f"-{self.left:f}"
             case "inv":
                 return f"1/({self.left})"
             case "conj":
@@ -134,6 +128,15 @@ class OpTreeC:
                 return f"Re({self.left})"
             case "im":
                 return f"Im({self.left})"
+
+    def __format__(self, format_spec: str) -> str:
+        s = str(self)
+        if "f" in format_spec and (
+            self.op == ("add", "neg")
+            or (self.op == "const" and "-" in s or "+" in s)
+        ):
+            s = f"({s})"
+        return s
 
 
 def get_complex(difficulty: int, **_):

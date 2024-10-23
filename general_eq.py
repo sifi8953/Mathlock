@@ -54,12 +54,6 @@ class OpTreeExpr:
             case _:  # unary operators
                 self.left = left or OpTreeExpr(depth=depth-1)
 
-    def group_terms(self, op: str) -> list[Self]:
-        if self.op == op:
-            return self.left.group_terms(op) + self.right.group_terms(op)
-        else:
-            return [self]
-
     def __call__(self, var: tuple[int]) -> int:
         match self.op:
             case "var":
@@ -82,17 +76,27 @@ class OpTreeExpr:
             case "const":
                 return str(self.val)
             case "add":
-                return "(" + ") + (".join(map(str, self.group_terms("add"))) + ")"
+                return f"{self.left} + {self.right}"
             case "mul":
-                return "(" + ") * (".join(map(str, self.group_terms("mul"))) + ")"
+                return f"{self.left:f} * {self.right:f}"
             case "neg":
-                return f"-({self.left})"
+                return f"-{self.left:f}"
             case "inv":
                 return f"1/({self.left})"
 
+    def __format__(self, format_spec: str) -> str:
+        s = str(self)
+        if "f" in format_spec and (
+            self.op in ("add", "neg")
+            or (self.op == "const" and "-" in s)
+
+        ):
+            s = f"({s})"
+        return s
+
 
 class OpTreeEq:
-    opers = {"add": 2, "mul": 1}
+    opers = {"add": 1, "mul": 1}
     root_range = (-5, 20)
 
     def __init__(self, depth: int, iters: int, root: None | int = None):
