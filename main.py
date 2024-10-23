@@ -1,5 +1,6 @@
 from c_arithmetic import get_complex
 from general_eq import get_eq
+from start_menu import start_menu
 
 import time
 import random
@@ -19,7 +20,7 @@ EQ_TYPES: dict[str, Callable[[str], Question]] = {
 }
 
 OPTIONS: dict[Any] = {
-    "difficulty": 4,
+    "difficulty": 2,
 }
 
 SLEEP_TIME: float = 60  # time in seconds between questions
@@ -52,10 +53,11 @@ def run_periodically(f: Callable[[], None], T: float):
 
 
 def main() -> None:
-    types = ("complex arithmetic", "general eq")
-
+    options = start_menu()
+    types = options["types"] #types = ("complex arithmetic", "general eq")
+    sleep_time = options["sleep_time"]
     # run_periodically(lambda: give_question(random.choice(questions)), SLEEP_TIME)
-    run_periodically(lambda: give_question(get_question(types, OPTIONS)), SLEEP_TIME)
+    run_periodically(lambda: give_question(get_question(types, OPTIONS)), sleep_time)
 
 
 if __name__ == "__main__":
