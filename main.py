@@ -1,6 +1,7 @@
 from c_arithmetic import get_complex
 from general_eq import get_eq
 from start_menu import start_menu
+from poly_eq import get_poly
 
 import time
 import random
@@ -14,13 +15,14 @@ EQ_TYPES: dict[str, Callable[[str], Question]] = {
     "complex arithmetic": get_complex,  # working
     "general eq": get_eq,  # working
     "system of eq": NotImplemented,
-    "second deg polynomials": NotImplemented,
+    "second deg polynomials": get_poly, #working
     "polynomial div": NotImplemented,
     "inverse trig": NotImplemented,
 }
 
 OPTIONS: dict[Any] = {
     "difficulty": 2,
+    "degree":2
 }
 
 SLEEP_TIME: float = 60  # time in seconds between questions

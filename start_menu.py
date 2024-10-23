@@ -8,14 +8,17 @@ QUESTION_TYPES = ("complex arithmetic",
 def start_menu() -> dict[str]:
     options = {}
     options.update({"types":choose_question_types(QUESTION_TYPES)})
-    options.update({"sleep_time":choose_interval()})
+    options.update({"sleep_time":duration_input()})
     return options
 
-def choose_interval():
+def duration_input():
     while True:
         try:
-            interval = int(input("\nChoose interval between questions(in seconds): "))
-            return(interval)
+            i = int(input("\nChoose duration between questions(in seconds): "))
+            if i >= 0:
+                return(i)
+            else:
+                print("Duration cannot be negative")
         except ValueError:
             pass
     
@@ -25,13 +28,12 @@ def choose_question_types(questions: tuple[str]) -> tuple[str]:
     for index, question_type in enumerate(questions, 0):
             print(f"{index}) {question_type}")
     while True:
-        print("\nYour chosen question types\n")
         if len(chosen_questions) > 0:
+            print("\nYour chosen question types")
             for question_type in chosen_questions:
-                print(f"--{question_type}")
-            print()
+                print(f"\t{question_type}")
                 
-        chosen_option = input("Add question type: ")
+        chosen_option = input("\nChoose question type: ")
         if chosen_option == "":
             if len(chosen_questions) > 0:
                 return tuple(chosen_questions)
