@@ -30,6 +30,8 @@ def get_question(types: tuple[str], options: dict[Any]) -> Question:
 
 
 def give_question(q: Question) -> None:
+    print(end="\007")  # play notification sound
+
     while True:
         try:
             correct = q[1](input(q[0]))

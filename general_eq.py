@@ -1,7 +1,6 @@
 import random
 from typing import Self, TypeVar
 from collections.abc import Iterable
-from functools import singledispatch
 
 T = TypeVar("T")
 
