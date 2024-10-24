@@ -11,6 +11,7 @@ COMPLEX_RE = "^(-?\\s*[0-9]+)?\\s*((?<!^)\\+(?!$)|(?=-)|(?<=^)|(?=$))\\s*(-?\\s*
 
 
 def weighted_random(seq: Iterable[tuple[T, int]]) -> T:
+    '''return a random item from the first element in the tuples in seq weighted by the second element in the tuples'''
     i = sum(w for _, w in seq)
     i = random.randrange(0, i)
     for t, w in seq:
@@ -20,26 +21,29 @@ def weighted_random(seq: Iterable[tuple[T, int]]) -> T:
 
 
 def complex_str(z: complex) -> str:
+    '''represent a complex number as a string'''
     if z.imag == 0:
-        return f"{z.real:g}"
+        return f"{z.real:g}"  # a
     elif z.real == 0:
         if z.imag == 1:
-            return f"i"
+            return f"i"  # i
         elif z.imag == -1:
-            return f"-i"
+            return f"-i"  # -i
         else:
-            return f"{z.imag:g}i"
+            return f"{z.imag:g}i"  # bi
     elif z.imag == 1:
-        return f"{z.real:g} + i"
+        return f"{z.real:g} + i"  # a+i
     elif z.imag == -1:
-        return f"{z.real:g} - i"
+        return f"{z.real:g} - i"  # a-i
     elif z.imag < 0:
-        return f"{z.real:g} - {-z.imag:g}i"
+        return f"{z.real:g} - {-z.imag:g}i"  # a-bi
     else:
-        return f"{z.real:g} + {z.imag:g}i"
+        return f"{z.real:g} + {z.imag:g}i"  # a+bi
 
 
 def parse_complex(z: str) -> complex:
+    '''convert string to complex number
+    \n raises ValueError if unsuccessful'''
     z = z.strip()
     match = re.match(COMPLEX_RE, z)
     if z and match:
@@ -54,11 +58,15 @@ def parse_complex(z: str) -> complex:
 
 
 class OpTreeC:
+    '''represents a complex expression'''
+
+    # valid operations and their random weight
     opers = {"add": 10, "mul": 10, "neg": 5, "inv": 2, "conj": 1, "abs": 1, "re": 1, "im": 1}
-    const_range = (-5, 10)
-    val_range = (-50, 100)
+    const_range = (-5, 10)  # range of parts in constants
+    val_range = (-50, 100)  # range of values of expression
 
     def __init__(self, depth: int):
+        '''construct a random expression at most `depth` operations deep'''
         self.op: str = "const" if random.random() < 2 ** -depth else weighted_random(OpTreeC.opers.items())
         self.val: complex | None = None
         self.left: OpTreeC | None = None
@@ -75,10 +83,12 @@ class OpTreeC:
                     self.left = OpTreeC(depth-1)
 
             try:
+                # make sure no division by zero occurs
                 z = self()
             except ZeroDivisionError:
                 continue
             else:
+                # make sure the parts are small integers
                 if (
                     z.real.is_integer() and z.imag.is_integer()
                     and OpTreeC.val_range[0] <= z.real <= OpTreeC.val_range[1]
@@ -88,6 +98,7 @@ class OpTreeC:
                     break
 
     def __call__(self) -> complex:
+        '''evaluates the expression'''
         match self.op:
             case "const":
                 return self.val
@@ -109,6 +120,7 @@ class OpTreeC:
                 return complex(0, self.left().imag)
 
     def __str__(self) -> str:
+        '''represent expression as a string'''
         match self.op:
             case "const":
                 return complex_str(self.val)
@@ -130,6 +142,7 @@ class OpTreeC:
                 return f"Im({self.left})"
 
     def __format__(self, format_spec: str) -> str:
+        '''f: wrap `str(self)` in parenthesis if necessary to use it as a factor'''
         s = str(self)
         if "f" in format_spec and (
             self.op == ("add", "neg")
