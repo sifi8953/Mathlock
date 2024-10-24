@@ -1,6 +1,6 @@
 import random
-from typing import Self, TypeVar
-from collections.abc import Iterable
+from typing import Self, TypeVar, Any
+from collections.abc import Iterable, Generator
 
 T = TypeVar("T")
 
@@ -29,81 +29,72 @@ class OpTreeExpr:
 
     var_str = "xyzabcduvw"  # characters to use as variable names
     # valid operations and their random weight
-    opers = {"add": 10, "mul": 10, "neg": 5, "inv": 2}
+    opers = {"add": 10, "sub": 5, "mul": 10, "div": 2}
     const_range = (-5, 10)  # range of parts in constants
     val_range = (-50, 100)  # range of values of expression
 
-    def __init__(
-        self,
-        op: str | None = None,
-        left: Self | None = None,
-        right: Self | None = None,
-        val: float | None = None,
-        depth: int = 0
-    ):
-        '''`op`: operation of expression, randomized if `None`
-        \n `left`: first argument of operation if it takes at least one argument
-        \n `right`: second argument of operation if it takes at least two arguments
-        \n `val`: value of constant if const operation or variable number if var operation
-        \n `depth`: maximum depth of randomized expressions.'''
-
-        self.op = op or ("const" if random.random() < 2 ** -depth else weighted_random(OpTreeExpr.opers.items()))
-        self.val = None
-        self.left = None
-        self.right = None
+    def __init__(self, op: str, *args: Any):
+        self.op = op
+        self.index: int | None = None
+        self.val: float | None = None
+        self.left: OpTreeExpr | None = None
+        self.right: OpTreeExpr | None = None
 
         match self.op:
             case "var":  # variable
-                self.val = val or 0
+                self.index = args[0]
             case "const":  # constant
-                self.val = val
-                while self.val is None or self.val == 0:  # don't allow zero constants
-                    self.val = float(random.randint(*OpTreeExpr.const_range))
-            case "add" | "mul":  # binary operators
-                self.left = left or OpTreeExpr(depth=depth-1)
-                self.right = right or OpTreeExpr(depth=depth-1)
-            case _:  # unary operators
-                self.left = left or OpTreeExpr(depth=depth-1)
+                self.val = args[0]
+            case _:  # operator
+                self.left = args[0]
+                self.right = args[1]
+
+    def transformations(self) -> Generator[Self, None, None]:
+        if self.op in ("var", "const"):  # cannot be transformed
+            return
+
+        # combine constants
+        if self.left.op == "const" and self.right.op == "const":
+            yield OpTreeExpr("const", self(()))
 
     def __call__(self, var: tuple[float]) -> float:
         '''evaluates the expression'''
         match self.op:
             case "var":
-                return var[self.val]
+                return var[self.index]
             case "const":
                 return self.val
             case "add":
                 return self.left(var) + self.right(var)
+            case "sub":
+                return self.left(var) - self.right(var)
             case "mul":
                 return self.left(var) * self.right(var)
-            case "neg":
-                return -self.left(var)
-            case "inv":
-                return 1/self.left(var)
+            case "div":
+                return self.left(var) / self.right(var)
 
     def __str__(self) -> str:
         '''represent expression as a string'''
         match self.op:
             case "var":
-                return OpTreeExpr.var_str[self.val]
+                return OpTreeExpr.var_str[self.index]
             case "const":
-                return f"{self.val:g}"
+                return self.val
             case "add":
                 return f"{self.left} + {self.right}"
+            case "sub":
+                return f"{self.left} - {self.right}"
             case "mul":
                 return f"{self.left:f} * {self.right:f}"
-            case "neg":
-                return f"-{self.left:f}"
-            case "inv":
-                return f"1/({self.left})"
+            case "div":
+                return f"{self.left:f} / ({self.right})"
 
     def __format__(self, format_spec: str) -> str:
         '''f: wrap `str(self)` in parenthesis if necessary to use it as a factor'''
         s = str(self)
         if "f" in format_spec and (
-            self.op in ("add", "neg")
+            self.op in ("add", "sub")
             or (self.op == "const" and "-" in s)
-
         ):
             s = f"({s})"
         return s
@@ -115,39 +106,11 @@ class OpTreeEq:
     opers = {"add": 1, "mul": 1}
     root_range = (-5, 20)  # range of roots of equation
 
-    def __init__(self, depth: int, iters: int, root: None | float = None):
-        '''`depth`: maximum depth of expressions
-        \n `iters`: number of expression to combine
-        \n `root`: root of equation, randomized if `None`'''
-        while True:
-            self.root = root or float(random.randint(*OpTreeEq.root_range))
-            self.left = OpTreeExpr("var", val=0)
-            self.right = OpTreeExpr("const", val=root)
+    def __init__(self, depth: int, roots: tuple[None | float]):
+        self.left = OpTreeExpr()
+        self.right: OpTreeExpr | None = None
 
-            for _ in range(iters):
-                op = weighted_random(OpTreeEq.opers.items())
-                expr = OpTreeExpr(depth=depth)
-
-                if random.random() < 0.5:  # randomize the order
-                    self.left = OpTreeExpr(op, self.left, expr)
-                else:
-                    self.left = OpTreeExpr(op, expr, self.left)
-
-                if random.random() < 0.5:  # randomize the order
-                    self.right = OpTreeExpr(op, self.right, expr)
-                else:
-                    self.right = OpTreeExpr(op, expr, self.right)
-
-            try:
-                t = self(self.root)
-                f = self(self.root+1)
-            except ZeroDivisionError:
-                continue
-            else:
-                if t and not f:
-                    break
-
-    def __call__(self, *var: float) -> bool:
+    def __call__(self, var: tuple[float]) -> bool:
         '''returns wether var describes a solution'''
         return self.left(var) == self.right(var)
 
