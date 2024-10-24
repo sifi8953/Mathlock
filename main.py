@@ -1,6 +1,6 @@
 from start_menu import start_menu
 from c_arithmetic import get_complex
-from general_eq import get_eq
+from eq_system import get_eq
 from poly_eq import get_poly
 
 import time
@@ -15,7 +15,7 @@ type Question = tuple[str, Callable[[str], bool]]
 EQ_TYPES: dict[str, Callable[[], Question]] = {
     "complex arithmetic": get_complex,  # working
     "general eq": get_eq,  # working
-    "system of eq": NotImplemented,
+    "system of eq": NotImplemented,  # started
     "second deg polynomials": get_poly,  # working
     "polynomial div": NotImplemented,
     "inverse trig": NotImplemented,
