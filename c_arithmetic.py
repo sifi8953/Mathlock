@@ -61,12 +61,13 @@ class OpTreeC:
     '''represents a complex expression'''
 
     # valid operations and their random weight
-    opers = {"add": 10, "mul": 10, "neg": 5, "inv": 2, "conj": 1, "abs": 1, "re": 1, "im": 1}
+    opers = {"add": 10, "sub": 5, "mul": 10, "div": 2, "conj": 1, "abs": 1, "re": 1, "im": 1}
     const_range = (-5, 10)  # range of parts in constants
     val_range = (-50, 100)  # range of values of expression
 
     def __init__(self, depth: int):
         '''construct a random expression at most `depth` operations deep'''
+        # chance to be leaf node
         self.op: str = "const" if random.random() < 2 ** -depth else weighted_random(OpTreeC.opers.items())
         self.val: complex | None = None
         self.left: OpTreeC | None = None
@@ -76,7 +77,7 @@ class OpTreeC:
             match self.op:
                 case "const":  # constant
                     self.val = random.randint(*OpTreeC.const_range) + 1j * random.randint(*OpTreeC.const_range)
-                case "add" | "mul":  # binary operators
+                case "add" | "sub" | "mul" | "div":  # binary operators
                     self.left = OpTreeC(depth-1)
                     self.right = OpTreeC(depth-1)
                 case _:  # unary operators
@@ -104,12 +105,12 @@ class OpTreeC:
                 return self.val
             case "add":
                 return self.left() + self.right()
+            case "sub":
+                return self.left() - self.right()
             case "mul":
                 return self.left() * self.right()
-            case "neg":
-                return -self.left()
-            case "inv":
-                return 1/self.left()
+            case "div":
+                return self.left() / self.right()
             case "conj":
                 return self.left().conjugate()
             case "abs":
@@ -126,12 +127,12 @@ class OpTreeC:
                 return complex_str(self.val)
             case "add":
                 return f"{self.left} + {self.right}"
+            case "sub":
+                return f"{self.left} - {self.right}"
             case "mul":
                 return f"{self.left:f} * {self.right:f}"
-            case "neg":
-                return f"-{self.left:f}"
-            case "inv":
-                return f"1/({self.left})"
+            case "div":
+                return f"{self.left:f} / ({self.right})"
             case "conj":
                 return f"conj({self.left})"
             case "abs":
@@ -145,7 +146,7 @@ class OpTreeC:
         '''f: wrap `str(self)` in parenthesis if necessary to use it as a factor'''
         s = str(self)
         if "f" in format_spec and (
-            self.op == ("add", "neg")
+            self.op == ("add", "sub")
             or (self.op == "const" and "-" in s or "+" in s)
         ):
             s = f"({s})"
