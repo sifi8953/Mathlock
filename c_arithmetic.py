@@ -1,6 +1,6 @@
 import re
 import random
-from typing import Self, TypeVar
+from typing import TypeVar
 from collections.abc import Iterable
 
 T = TypeVar("T")
