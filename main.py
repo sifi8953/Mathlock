@@ -1,7 +1,7 @@
 from start_menu import start_menu
 from c_arithmetic import get_complex
 from eq_system import get_eq, get_eq_sys
-from poly_eq import get_poly
+from poly_eq import get_poly, get_poly_div
 from inv_trig import get_inv_trig
 
 import time
@@ -18,7 +18,7 @@ EQ_TYPES: dict[str, Callable[[], Question]] = {
     "general eq": get_eq,  # working
     "system of eq": get_eq_sys,  # working
     "second deg polynomials": get_poly,  # working
-    "polynomial div": NotImplemented,
+    "polynomial div": get_poly_div, # working
     "inverse trig": get_inv_trig,  # working
 }
 

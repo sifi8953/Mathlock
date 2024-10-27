@@ -6,9 +6,30 @@ ROOT_MAX = 5
 
 
 def get_poly(degree: int = 2, difficulty: int = 1, **_):
-    roots = random_roots(degree, ROOT_MIN * difficulty, ROOT_MAX * difficulty)
-    eq = poly_string(poly_from_roots(roots)) + " = 0"
+    roots = random_ints(degree, ROOT_MIN * difficulty, ROOT_MAX * difficulty)
+    eq = randomize_eq(poly_from_roots(roots))
     return f"Find all roots for the equation:\n\t{eq}\nx = ", lambda x: parse_ints(x) == set(roots)
+
+
+def get_poly_div(degree: int = 2, difficulty: int = 1, **_):
+    roots = random_ints(degree + 1, ROOT_MIN * difficulty, ROOT_MAX * difficulty)
+    eq = f"{poly_string(poly_from_roots(roots))} = 0"
+    revealed_roots = []
+    for i in range(1):
+        revealed_roots.append(roots[i])
+    
+    for root in revealed_roots:
+        roots.remove(root)
+    return f"An equation has the known roots {revealed_roots}, find all remaining roots for the equation:\n\t{eq}\nx = ", lambda x: parse_ints(x) == set(roots)
+
+
+def randomize_eq(p):
+    eq_left = p
+    coeffRange = max(eq_left)
+    eq_right = random_ints(len(p), -coeffRange, coeffRange)
+    eq_left = poly_add(eq_left, eq_right)
+    eq = f"{poly_string(eq_left)} = {poly_string(eq_right)}" 
+    return eq
 
 
 def parse_ints(x: str) -> set[int]:
@@ -63,14 +84,14 @@ def poly_string(polynomial: list[int]) -> str:
     poly_string = " "
     for exponent, coeff in reversed(list(enumerate(polynomial, 0))):
         poly_string += f"{coeff}x^{exponent} + "
-    poly_string = poly_string.replace("+ -", "- ").replace("x^1", "x").replace("x^0",
-                                                                               "").replace(" 1x", " x").replace(" + 0x", "")[:-3]
+    poly_string = poly_string.replace("+ -", "- ").replace("x^1", "x").replace("x^0","").replace(" 1x", " x").replace(" + 0x", "")[:-3]
     return poly_string.strip()
 
 
-def random_roots(degree: int, root_min: int, root_max: int) -> list[int]:
-    '''returns a list of "degree" length of random integers between ROOT_MIN AND ROOT_MAX'''
+def random_ints(amount: int, min: int, max: int) -> list[int]:
+    '''returns a list of "amount" length of random integers between ROOT_MIN AND ROOT_MAX'''
     roots = []
-    for i in range(degree):
-        roots.append(randint(root_min, root_max))
+    for i in range(amount):
+        roots.append(randint(min, max))
     return roots
+
