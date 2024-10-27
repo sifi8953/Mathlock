@@ -1,21 +1,21 @@
 from itertools import zip_longest
 from random import randint
 
-ROOT_MIN = -6
-ROOT_MAX = 6
+ROOT_MIN = -5
+ROOT_MAX = 5
 
 
-def get_poly(degree: int = 2, **_):
-    roots = random_roots(degree)
+def get_poly(degree: int = 2, difficulty: int = 1, **_):
+    roots = random_roots(degree, ROOT_MIN * difficulty, ROOT_MAX * difficulty)
     eq = poly_string(poly_from_roots(roots)) + " = 0"
-    return f"Solve for x:\n\t{eq}\nx = ", lambda x: parse_int(x) in roots
+    return f"Find all roots for the equation:\n\t{eq}\nx = ", lambda x: parse_ints(x) == set(roots)
 
 
-def parse_int(x: str) -> int:
+def parse_ints(x: str) -> set[int]:
     try:
-        return int(x)
+        return set([int(i) for i in x.split(',')])
     except ValueError:
-        raise ValueError("please input a number")
+        raise ValueError("Please input only numbers")
 
 
 def poly_from_roots(roots: list[int]):
@@ -68,9 +68,9 @@ def poly_string(polynomial: list[int]) -> str:
     return poly_string.strip()
 
 
-def random_roots(degree: int) -> list[int]:
+def random_roots(degree: int, root_min: int, root_max: int) -> list[int]:
     '''returns a list of "degree" length of random integers between ROOT_MIN AND ROOT_MAX'''
     roots = []
     for i in range(degree):
-        roots.append(randint(ROOT_MIN, ROOT_MAX))
+        roots.append(randint(root_min, root_max))
     return roots
