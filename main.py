@@ -18,7 +18,7 @@ EQ_TYPES: dict[str, Callable[[], Question]] = {
     "system of eq": get_eq_sys,  # working
     "second deg polynomials": get_poly,  # working
     "polynomial div": NotImplemented,
-    "inverse trig": NotImplemented,
+    "inverse trig": NotImplemented,  # started
 }
 
 # arguments to get_{equation type} functions
