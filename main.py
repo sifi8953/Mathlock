@@ -9,6 +9,8 @@ import random
 from collections.abc import Callable
 from typing import Any
 
+from gui import give_question
+
 # (question, grading function)
 type Question = tuple[str, Callable[[str], bool]]
 
@@ -18,7 +20,7 @@ EQ_TYPES: dict[str, Callable[[], Question]] = {
     "general eq": get_eq,  # working
     "system of eq": get_eq_sys,  # working
     "second deg polynomials": get_poly,  # working
-    "polynomial div": get_poly_div, # working
+    "polynomial div": get_poly_div,  # working
     "inverse trig": get_inv_trig,  # working
 }
 
@@ -33,26 +35,6 @@ OPTIONS: dict[Any] = {
 def get_question(types: tuple[str], options: dict[Any]) -> Question:
     '''generate and return a random question from among the types'''
     return EQ_TYPES[random.choice(types)](**options)
-
-
-def give_question(q: Question) -> None:
-    '''notify and give user question until they get it right'''
-    print(end="\007")  # play notification sound
-
-    while True:
-        try:
-            # call grading function of question with user inputted answer
-            correct = q[1](input(q[0]))
-        except ValueError as e:
-            # grading function failed
-            print(f"Error: {e}\n")
-        else:
-            # grading successfull
-            if correct:
-                print("Correct!\n")
-                break  # done with question
-            else:
-                print("Incorrect, try again.\n")
 
 
 def run_periodically(f: Callable[[], None], T: float):
