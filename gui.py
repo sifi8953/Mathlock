@@ -36,7 +36,7 @@ def give_question(q: Question, i: int) -> None:
     win.title("MathLock")  # rename window
     win.resizable(False, False)  # disable resizing
     win.attributes("-topmost", True)  # always on top
-    # win.attributes("-type", "toolbar")  # disable minimizing and closing
+    win.attributes("-type", "toolbar")  # disable minimizing and closing
 
     win_width = 500  # window width
     win_height = 500  # window height
