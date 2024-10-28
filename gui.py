@@ -67,7 +67,3 @@ def give_question(q: Question, i: int) -> None:
     center.place(relx=0.5, rely=0.5, anchor="center")
 
     win.mainloop()  # show window
-
-
-if __name__ == "__main__":
-    give_question(("Question\nx = ", lambda x: False))
