@@ -128,7 +128,7 @@ class OpTreeC:
             case "add":
                 return f"{self.left} + {self.right}"
             case "sub":
-                return f"{self.left} - {self.right}"
+                return f"{self.left} - {self.right:f}"
             case "mul":
                 return f"{self.left:f} * {self.right:f}"
             case "div":

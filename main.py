@@ -38,17 +38,20 @@ def get_question(types: tuple[str], options: dict[Any]) -> Question:
 
 
 def run_periodically(f: Callable[[], None], T: float):
+    i = 0
     while True:
-        f()  # run
+        f(i)  # run
         time.sleep(T)  # wait one period
+        i += 1  # advance counter
 
 
 def main() -> None:
     options = start_menu()
     types = options["types"]  # types = ("complex arithmetic", "general eq")
     sleep_time = options["sleep_time"]
+    print()
     # run_periodically(lambda: give_question(random.choice(questions)), SLEEP_TIME)
-    run_periodically(lambda: give_question(get_question(types, OPTIONS)), sleep_time)
+    run_periodically(lambda i: give_question(get_question(types, OPTIONS), i), sleep_time)
 
 
 if __name__ == "__main__":

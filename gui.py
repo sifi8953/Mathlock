@@ -22,19 +22,21 @@ def validate(grade: Callable[[str], bool], error: ttk.Label, root: tk.Tk):
             error.config(text=f"Error: {e}")
         else:
             if correct:
+                # close window
+                root.destroy()
                 root.quit()
             else:
                 error.config(text=f"Incorrect, try again.")
     return f
 
 
-def give_question(q: Question) -> None:
+def give_question(q: Question, i: int) -> None:
     '''notify and give user question until they get it right'''
     win = tk.Tk()  # new window
     win.title("MathLock")  # rename window
     win.resizable(False, False)  # disable resizing
     win.attributes("-topmost", True)  # always on top
-    win.attributes("-type", "toolbar")  # disable minimizing and closing
+    # win.attributes("-type", "toolbar")  # disable minimizing and closing
 
     win_width = 500  # window width
     win_height = 500  # window height
@@ -46,7 +48,9 @@ def give_question(q: Question) -> None:
 
     # create widgets
     center = ttk.Frame(win)
-    label = ttk.Label(center, text=q[0], wraplength=win_width * 0.9)
+    number = ttk.Label(center, text=f"Question #{i+1}")
+    seperator = ttk.Separator(center)
+    label = ttk.Label(center, text=q[0], wraplength=int(win_width * 0.9))
     entry = ttk.Entry(center)
     error = ttk.Label(center)
 
@@ -55,6 +59,8 @@ def give_question(q: Question) -> None:
     entry.focus()  # focus on text box, doesn't seem to work on Ubuntu at least
 
     # add widgets
+    number.pack()
+    seperator.pack(fill="x")
     label.pack()
     entry.pack()
     error.pack()
