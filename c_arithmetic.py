@@ -51,6 +51,8 @@ def parse_complex(z: str) -> complex:
         b = (match.group(3) or "0").rstrip("i").strip() or "1"
         if b == "-":
             b = "-1"
+
+        b = re.sub("-\\s*", "-", b)
         a, b = float(a), float(b)
         return complex(a, b)
     else:
@@ -118,7 +120,7 @@ class OpTreeC:
             case "re":
                 return complex(self.left().real, 0)
             case "im":
-                return complex(0, self.left().imag)
+                return complex(self.left().imag, 0)
 
     def __str__(self) -> str:
         '''represent expression as a string'''
