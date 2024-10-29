@@ -7,6 +7,10 @@ from collections.abc import Callable
 type Question = tuple[str, Callable[[str], bool]]
 
 
+def disable_event():
+    pass
+
+
 def validate(grade: Callable[[str], bool], error: ttk.Label, root: tk.Tk):
     def f(event: tk.Event):
         entry: ttk.Entry = event.widget
@@ -37,7 +41,10 @@ def give_question(q: Question, i: int) -> None:
     win.resizable(False, False)  # disable resizing
     win.attributes("-topmost", True)  # always on top
 
-    # disable minimizing and closing
+    # disable closing
+    win.protocol("WM_DELETE_WINDOW", disable_event)
+
+    # disable minimizing
     if platform == "win32":
         # windows
         win.overrideredirect(True)
