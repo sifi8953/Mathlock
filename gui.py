@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-
+from sys import platform
 from collections.abc import Callable
 
 # (question, grading function)
@@ -36,7 +36,15 @@ def give_question(q: Question, i: int) -> None:
     win.title("MathLock")  # rename window
     win.resizable(False, False)  # disable resizing
     win.attributes("-topmost", True)  # always on top
-    win.attributes("-type", "toolbar")  # disable minimizing and closing
+
+    # disable minimizing and closing
+    if platform == "win32":
+        # windows
+        win.overrideredirect(True)
+        win.attributes("-toolwindow", True)
+    else:
+        # linux
+        win.attributes("-type", "toolbar")
 
     win_width = 500  # window width
     win_height = 500  # window height
