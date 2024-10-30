@@ -1,14 +1,6 @@
-QUESTION_TYPES = ("complex arithmetic",
-                  "general eq",
-                  "system of eq",
-                  "second deg polynomials",
-                  "polynomial div",
-                  "inverse trig")
-
-
-def start_menu() -> dict[str]:
+def start_menu(eq_types: tuple[str]) -> dict[str]:
     options = {}
-    options.update({"types": choose_question_types(QUESTION_TYPES)})
+    options.update({"types": choose_question_types(eq_types)})
     options.update({"sleep_time": duration_input()})
     return options
 

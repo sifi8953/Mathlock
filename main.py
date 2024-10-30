@@ -1,4 +1,3 @@
-from start_menu import start_menu
 from c_arithmetic import get_complex
 from eq_system import get_eq, get_eq_sys
 from poly_eq import get_poly, get_poly_div
@@ -9,6 +8,7 @@ import random
 from collections.abc import Callable
 from typing import Any
 
+from start_menu_gui import start_menu
 from gui import give_question
 
 # (question, grading function)
@@ -40,18 +40,18 @@ def get_question(types: tuple[str], options: dict[Any]) -> Question:
 def run_periodically(f: Callable[[], None], T: float):
     i = 0
     while True:
-        f(i)  # run
         time.sleep(T)  # wait one period
+        f(i)  # run
         i += 1  # advance counter
 
 
 def main() -> None:
-    options = start_menu()
-    types = options["types"]  # types = ("complex arithmetic", "general eq")
-    sleep_time = options["sleep_time"]
+    options = start_menu(tuple(EQ_TYPES.keys()))
+    if "difficulty" in options.keys():
+        OPTIONS["difficulty"] = options["difficulty"] 
+
     print()
-    # run_periodically(lambda: give_question(random.choice(questions)), SLEEP_TIME)
-    run_periodically(lambda i: give_question(get_question(types, OPTIONS), i), sleep_time)
+    run_periodically(lambda i: give_question(get_question(options["types"], OPTIONS), i), options["sleep_time"])
 
 
 if __name__ == "__main__":
