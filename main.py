@@ -48,7 +48,7 @@ def run_periodically(f: Callable[[], None], T: float):
 def main() -> None:
     options = start_menu(tuple(EQ_TYPES.keys()))
     if "difficulty" in options.keys():
-        OPTIONS["difficulty"] = options["difficulty"] 
+        OPTIONS["difficulty"] = options["difficulty"]
 
     print()
     run_periodically(lambda i: give_question(get_question(options["types"], OPTIONS), i), options["sleep_time"])

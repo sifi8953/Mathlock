@@ -1,5 +1,5 @@
 import random
-import math
+import re
 
 const_range = (-5, 10)
 
@@ -121,7 +121,10 @@ def parse_solution(x: str) -> LinExpr:
     # a + b pi + (c + d pi) n
     a, b, c, d = 0.0, 0.0, 0.0, 0.0
 
-    for t in x.replace("-", "+-").lstrip("+").split("+"):
+    x = x.replace("-", "+-").strip().lstrip("+")  # replace subtraction with addition of negative
+    x: str = re.sub("-\\s+", "-", x)  # remove spaces between negative sign and number
+
+    for t in x.split("+"):
         if "pi" in t:
             t = t.replace("pi", " ")
             if "n" in t:
@@ -143,9 +146,10 @@ def parse_solutions(x: str) -> TrigAns:
     '''interpret string as both cases of a trigonometric solution'''
     try:
         v1, v2 = x.split(",")
-        return parse_solution(v1), parse_solution(v2)
     except ValueError:
-        raise ValueError("please answer in the form 'a + b pi + c n + d pi n'")
+        raise ValueError("please answer in the form 'a + b pi + c n + d pi n, ...'")
+    else:
+        return parse_solution(v1), parse_solution(v2)
 
 
 def standardise(x: LinExpr) -> LinExpr:
