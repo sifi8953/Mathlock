@@ -107,13 +107,15 @@ def solve_trig_eq(x: TrigEq) -> TrigAns:
     return ans1, ans2
 
 
-def parse_rational(x: str) -> float:
+def parse_rational(x: str, default: float) -> float:
     '''interpret string as float or quotient of floats'''
     if "/" in x:
         a, b = x.split("/")
         return float(a) / float(b)
-    else:
+    elif x.strip():
         return float(x)
+    else:
+        return default
 
 
 def parse_solution(x: str) -> LinExpr:
@@ -129,15 +131,15 @@ def parse_solution(x: str) -> LinExpr:
             t = t.replace("pi", " ")
             if "n" in t:
                 t = t.replace("n", " ")
-                d += parse_rational(t)
+                d += parse_rational(t, 1)
             else:
-                b += parse_rational(t)
+                b += parse_rational(t, 1)
         else:
             if "n" in t:
                 t = t.replace("n", " ")
-                c += parse_rational(t)
+                c += parse_rational(t, 1)
             else:
-                a += parse_rational(t)
+                a += parse_rational(t, 0)
 
     return (a, b), (c, d)
 
@@ -146,10 +148,9 @@ def parse_solutions(x: str) -> TrigAns:
     '''interpret string as both cases of a trigonometric solution'''
     try:
         v1, v2 = x.split(",")
+        return parse_solution(v1), parse_solution(v2)
     except ValueError:
         raise ValueError("please answer in the form 'a + b pi + c n + d pi n, ...'")
-    else:
-        return parse_solution(v1), parse_solution(v2)
 
 
 def standardise(x: LinExpr) -> LinExpr:
